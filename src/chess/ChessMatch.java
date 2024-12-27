@@ -9,10 +9,15 @@ import chess.pieces.Rook;
 
 public class ChessMatch {
 	
+	private int turn;
+	private Color currentPlayer;
 	private Board board;
 	
 	public ChessMatch() {
-		board = new Board(8, 8);
+		this.board = new Board(8, 8);
+		this.turn = 1;
+		this.currentPlayer = Color.WHITE;
+		
 		initialSetup();
 	}
 	
@@ -40,6 +45,7 @@ public class ChessMatch {
 		validateTargetPosition(source, target);
 		
 		Piece capturedPiece = makeMove(source, target);
+		nextTurn();
 		return (ChessPiece) capturedPiece;
 	}
 
@@ -54,6 +60,9 @@ public class ChessMatch {
 	private void validateSourcePosition(Position position) {
 		if (!board.thereIsAPiece(position)) {
 			throw new ChessException("There is no piece on source position.");
+		}
+		if (currentPlayer != ((ChessPiece)board.piece(position)).getColor()) {
+			throw new ChessException("Source piece isn't a valid choice.");
 		}
 		if (!board.piece(position).isThereAnyPossibleMove()) {
 			throw new ChessException("There is no possible move on source position.");
@@ -83,5 +92,18 @@ public class ChessMatch {
         placeNewPiece('e', 7, new Rook(board, Color.BLACK));
         placeNewPiece('e', 8, new Rook(board, Color.BLACK));
         placeNewPiece('d', 8, new King(board, Color.BLACK));
+	}
+
+	public int getTurn() {
+		return turn;
+	}
+	
+	private void nextTurn() {
+		this.turn += 1;
+		this.currentPlayer = currentPlayer == Color.WHITE ? Color.BLACK : Color.WHITE;
+	}
+
+	public Color getCurrentPlayer() {
+		return currentPlayer;
 	}
 }
